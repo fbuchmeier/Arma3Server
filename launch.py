@@ -1,6 +1,7 @@
 import os
 import re
 import subprocess
+from string import Template
 
 import local
 import workshop
@@ -27,8 +28,9 @@ if os.environ["SKIP_INSTALL"] in ["", "false"]:
 
     steamcmd = ["/steamcmd/steamcmd.sh"]
     steamcmd.extend(["+force_install_dir", "/arma3"])
-    steamcmd.extend(["+login", os.environ["STEAM_USER"], os.environ["STEAM_PASSWORD"]])
-    steamcmd.extend(["+app_update", "233780"])
+    if env_defined("STEAM_USER") and env_defined("STEAM_PASSWORD"):
+        steamcmd.extend(["+login", os.environ["STEAM_USER"], os.environ["STEAM_PASSWORD"]])
+        steamcmd.extend(["+app_update", "233780"])
     if env_defined("STEAM_BRANCH"):
         steamcmd.extend(["-beta", os.environ["STEAM_BRANCH"]])
     if env_defined("STEAM_BRANCH_PASSWORD"):
@@ -87,9 +89,14 @@ if clients != 0:
         client_launch += " -password={}".format(config_values["password"])
 
     for i in range(0, clients):
-        hc_launch = client_launch + ' -name="{}-hc-{}"'.format(
-            os.environ["ARMA_PROFILE"], i
+        hc_template = Template(
+            os.environ["HEADLESS_CLIENTS_PROFILE"]
+        )  # eg. '$profile-hc-$i'
+        hc_name = hc_template.substitute(
+            profile=os.environ["ARMA_PROFILE"], i=i, ii=i + 1
         )
+
+        hc_launch = client_launch + ' -name="{}"'.format(hc_name)
         print("LAUNCHING ARMA CLIENT {} WITH".format(i), hc_launch)
         subprocess.Popen(hc_launch, shell=True)
 
