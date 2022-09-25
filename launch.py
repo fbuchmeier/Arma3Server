@@ -37,6 +37,8 @@ if os.environ["SKIP_INSTALL"] in ["", "false"]:
         steamcmd.extend(["-betapassword", os.environ["STEAM_BRANCH_PASSWORD"]])
     steamcmd.extend(["validate", "+quit"])
     subprocess.call(steamcmd)
+else:
+    print("Skipping installation of ARMA because SKIP_INSTALL is {}".format(os.environ["SKIP_INSTALL"]))
 
 # Mods
 

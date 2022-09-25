@@ -13,18 +13,21 @@ def env_defined(key):
 
 
 def mod(id):
-    steamcmd = ["/steamcmd/steamcmd.sh"]
-    steamcmd.extend(["+force_install_dir", "/arma3"])
-    if env_defined("STEAM_USER") and env_defined("STEAM_PASSWORD"):
-        steamcmd.extend(["+login", os.environ["STEAM_USER"], os.environ["STEAM_PASSWORD"]])
-    steamcmd.extend(["+workshop_download_item", "107410", id])
-    steamcmd.extend(["+quit"])
-    res = ""
-    # steamcmd returns 10 for errors like timeouts
-    while res != 0:
-        res = subprocess.call(steamcmd)
-        if res != 0:
-            subprocess.call(["/usr/bin/rsync","-aPq","/arma3/steamapps/workshop/downloads/107410/{}/".format(id),"/arma3/steamapps/workshop/content/107410/{}/".format(id)])
+    if os.environ["SKIP_INSTALL"] in ["", "false"]:
+        steamcmd = ["/steamcmd/steamcmd.sh"]
+        steamcmd.extend(["+force_install_dir", "/arma3"])
+        if env_defined("STEAM_USER") and env_defined("STEAM_PASSWORD"):
+            steamcmd.extend(["+login", os.environ["STEAM_USER"], os.environ["STEAM_PASSWORD"]])
+        steamcmd.extend(["+workshop_download_item", "107410", id])
+        steamcmd.extend(["+quit"])
+        res = ""
+        # steamcmd returns 10 for errors like timeouts
+        while res != 0:
+            res = subprocess.call(steamcmd)
+            if res != 0:
+                subprocess.call(["/usr/bin/rsync","-aPq","/arma3/steamapps/workshop/downloads/107410/{}/".format(id),"/arma3/steamapps/workshop/content/107410/{}/".format(id)])
+    else:
+        print("Skipping installation of mods because SKIP_INSTALL is {}".format(os.environ["SKIP_INSTALL"]))
 
 def preset(mod_file):
     if mod_file.startswith("http"):
