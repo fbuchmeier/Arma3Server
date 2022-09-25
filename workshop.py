@@ -23,7 +23,8 @@ def mod(id):
     # steamcmd returns 10 for errors like timeouts
     while res != 0:
         res = subprocess.call(steamcmd)
-        subprocess.call(["/usr/bin/rsync","-aPq","/arma3/steamapps/workshop/downloads/107410/{}/".format(id),"/arma3/steamapps/workshop/content/107410/{}/".format(id)])
+        if res != 0:
+            subprocess.call(["/usr/bin/rsync","-aPq","/arma3/steamapps/workshop/downloads/107410/{}/".format(id),"/arma3/steamapps/workshop/content/107410/{}/".format(id)])
 
 def preset(mod_file):
     if mod_file.startswith("http"):

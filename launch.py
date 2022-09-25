@@ -111,4 +111,7 @@ if os.path.exists("servermods"):
     launch += mod_param("serverMod", local.mods("servermods"))
 
 print("LAUNCHING ARMA SERVER WITH", launch, flush=True)
+
+open("/tmp/arma3_install_success", "a").close()
+
 os.system(launch)
