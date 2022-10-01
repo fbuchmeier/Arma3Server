@@ -3,10 +3,12 @@ FROM debian:bullseye-slim
 LABEL maintainer="Brett - github.com/brettmayson"
 LABEL org.opencontainers.image.source=https://github.com/brettmayson/arma3server
 
+RUN groupadd -r steam -g 433 && \
+    useradd -u 431 -r -g steam -s /sbin/nologin -c "Docker image user" steam
+
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN apt-get update \
-    && \
-    apt-get install -y --no-install-recommends --no-install-suggests \
+    && apt-get install -y --no-install-recommends --no-install-suggests \
         python3 \
         lib32stdc++6 \
         lib32gcc-s1 \
@@ -14,18 +16,15 @@ RUN apt-get update \
         wget \
         ca-certificates \
         rsync \
-    && \
-    apt-get remove --purge -y \
-    && \
-    apt-get clean autoclean \
-    && \
-    apt-get autoremove -y \
-    && \
-    rm -rf /var/lib/apt/lists/* \
-    && \
-    mkdir -p /steamcmd \
-    && \
-    wget -qO- 'https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz' | tar zxf - -C /steamcmd
+    && apt-get remove --purge -y \
+    && apt-get clean autoclean \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/* \
+    && mkdir -p /steamcmd \
+    && chown steam:steam /steamcmd \
+    && mkdir /arma3 \
+    && chown steam:steam /arma3 \
+    && wget -qO- 'https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz' | tar zxf - -C /steamcmd
 
 ENV ARMA_BINARY=./arma3server
 ENV ARMA_CONFIG=main.cfg
@@ -56,5 +55,7 @@ VOLUME /steamcmd
 STOPSIGNAL SIGINT
 
 COPY *.py /
+
+USER steam
 
 CMD ["python3","/launch.py"]
