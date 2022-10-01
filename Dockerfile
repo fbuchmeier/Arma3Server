@@ -24,7 +24,9 @@ RUN apt-get update \
     && mkdir /arma3 \
     && wget -qO- 'https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz' | tar zxf - -C /opt/steamcmd \
     && chown -R steam:steam /opt/steamcmd \
-    && chown -R steam:steam /arma3
+    && chown -R steam:steam /arma3 \
+    && mkdir /steamcmd \
+    && chown steam:steam /steamcmd
 
 ENV ARMA_BINARY=./arma3server
 ENV ARMA_CONFIG=main.cfg
@@ -56,7 +58,9 @@ VOLUME /home/steam
 STOPSIGNAL SIGINT
 
 COPY *.py /
+COPY entrypoint.sh /entrypoint.sh
 
 USER steam
 
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["python3","/launch.py"]

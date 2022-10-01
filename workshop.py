@@ -22,10 +22,12 @@ def mod(id):
         steamcmd.extend(["+quit"])
         res = ""
         # steamcmd returns 10 for errors like timeouts
-        while res != 0:
+        for i in range(1,10):
             res = subprocess.call(steamcmd)
             if res != 0:
                 subprocess.call(["/usr/bin/rsync","-aPq","/arma3/steamapps/workshop/downloads/107410/{}/".format(id),"/arma3/steamapps/workshop/content/107410/{}/".format(id)])
+            else:
+              break
     else:
         print("Skipping installation of mods because SKIP_INSTALL is {}".format(os.environ["SKIP_INSTALL"]))
 
