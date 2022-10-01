@@ -21,10 +21,10 @@ RUN apt-get update \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p /steamcmd \
-    && chown steam:steam /steamcmd \
     && mkdir /arma3 \
-    && chown steam:steam /arma3 \
-    && wget -qO- 'https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz' | tar zxf - -C /steamcmd
+    && wget -qO- 'https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz' | tar zxf - -C /steamcmd \
+    && chown -R steam:steam /steamcmd \
+    && chown -R steam:steam /arma3
 
 ENV ARMA_BINARY=./arma3server
 ENV ARMA_CONFIG=main.cfg
