@@ -1,7 +1,7 @@
 FROM debian:bullseye-slim
 
-LABEL maintainer="Brett - github.com/brettmayson"
-LABEL org.opencontainers.image.source=https://github.com/brettmayson/arma3server
+LABEL maintainer="Florian - github.com/fbuchmeier"
+LABEL org.opencontainers.image.source=https://github.com/fbuchmeier/arma3server
 
 RUN groupadd -r steam -g 433 && \
     useradd -u 431 -r -g steam -s /sbin/nologin -c "Docker image user" steam
@@ -20,10 +20,10 @@ RUN apt-get update \
     && apt-get clean autoclean \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/* \
-    && mkdir -p /steamcmd \
+    && mkdir -p /opt/steamcmd \
     && mkdir /arma3 \
-    && wget -qO- 'https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz' | tar zxf - -C /steamcmd \
-    && chown -R steam:steam /steamcmd \
+    && wget -qO- 'https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz' | tar zxf - -C /opt/steamcmd \
+    && chown -R steam:steam /opt/steamcmd \
     && chown -R steam:steam /arma3
 
 ENV ARMA_BINARY=./arma3server
@@ -31,7 +31,7 @@ ENV ARMA_CONFIG=main.cfg
 ENV ARMA_PARAMS=
 ENV ARMA_PROFILE=main
 ENV ARMA_WORLD=empty
-ENV ARMA_LIMITFPS=1000
+ENV ARMA_LIMITFPS=100
 ENV ARMA_CDLC=
 ENV HEADLESS_CLIENTS=0
 ENV HEADLESS_CLIENTS_PROFILE="\$profile-hc-\$i"
@@ -51,6 +51,7 @@ EXPOSE 2306/udp
 WORKDIR /arma3
 
 VOLUME /steamcmd
+VOLUME /home/steam
 
 STOPSIGNAL SIGINT
 

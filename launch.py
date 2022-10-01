@@ -1,6 +1,7 @@
 import os
 import re
 import subprocess
+from shutil import copytree
 from string import Template
 
 import local
@@ -22,6 +23,9 @@ if not os.path.isdir(KEYS):
     if os.path.exists(KEYS):
         os.remove(KEYS)
     os.makedirs(KEYS)
+
+# Copy steamcmd to VOLUME to allow read only root filesystem
+destination = copytree("/opt/steamcmd", "/steamcmd") 
 
 if os.environ["SKIP_INSTALL"] in ["", "false"]:
     # Install Arma
