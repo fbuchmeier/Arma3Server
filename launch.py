@@ -25,7 +25,7 @@ if not os.path.isdir(KEYS):
     os.makedirs(KEYS)
 
 # Copy steamcmd to VOLUME to allow read only root filesystem
-destination = copytree("/opt/steamcmd", "/steamcmd") 
+destination = copytree("/opt/steamcmd", "/steamcmd", dirs_exist_ok=True) 
 
 if os.environ["SKIP_INSTALL"] in ["", "false"]:
     # Install Arma
