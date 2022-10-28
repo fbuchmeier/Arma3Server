@@ -10,6 +10,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN apt-get update \
     && apt-get install -y --no-install-recommends --no-install-suggests \
         python3 \
+        python3-pip \
         lib32stdc++6 \
         lib32gcc-s1 \
         libcurl4 \
@@ -28,7 +29,7 @@ RUN apt-get update \
     && mkdir /steamcmd \
     && chown steam:steam /steamcmd
 
-ENV ARMA_BINARY=./arma3server
+ENV ARMA_BINARY=/arma3/arma3server
 ENV ARMA_CONFIG=main.cfg
 ENV ARMA_PARAMS=
 ENV ARMA_PROFILE=main
@@ -49,6 +50,7 @@ EXPOSE 2303/udp
 EXPOSE 2304/udp
 EXPOSE 2305/udp
 EXPOSE 2306/udp
+EXPOSE 8000/tcp
 
 WORKDIR /arma3
 
@@ -59,6 +61,9 @@ STOPSIGNAL SIGINT
 
 COPY *.py /
 COPY entrypoint.sh /entrypoint.sh
+COPY requirements.txt /requirements.txt
+
+RUN pip3 install -r /requirements.txt
 
 USER steam
 
