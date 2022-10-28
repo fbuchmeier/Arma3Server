@@ -141,8 +141,8 @@ if __name__ == '__main__':
 
     import subprocess
 
-    with subprocess.Popen((launch.split(' ')), stdout=subprocess.PIPE, bufsize=1, universal_newlines=True, stderr=subprocess.STDOUT) as p:
-        for line in p.stdout:
+    with subprocess.Popen((launch.split(' ')), stdout=subprocess.PIPE, bufsize=1, universal_newlines=True, stderr=subprocess.STDOUT) as process:
+        for line in process.stdout:
             print(line, end='')
             if "Server load: FPS" in line:
                 metrics = local.parse_monitor_log(line)
