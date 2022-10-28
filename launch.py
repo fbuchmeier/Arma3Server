@@ -141,15 +141,11 @@ if __name__ == '__main__':
 
     import subprocess
 
-    p1 = subprocess.Popen((launch.split(' ')), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    with subprocess.Popen(('tee', '/arma3/logs/stdout.log'),  stdin=p1.stdout, stdout=subprocess.PIPE, bufsize=1, universal_newlines=True) as p:
+    with subprocess.Popen((launch.split(' ')), stdout=subprocess.PIPE, bufsize=1, universal_newlines=True, stderr=subprocess.STDOUT) as p:
         for line in p.stdout:
             print(line, end='')
-            if "Server Load: FPS" in line:
+            if "Server load: FPS" in line:
                 metrics = local.parse_monitor_log(line)
                 f.set(metrics["fps"])
                 m.set(metrics["memory"])
                 p.set(metrics["players"])
-    p1.wait()
-    status = p1.poll()
-    print("process terminated with code: %s" % status)

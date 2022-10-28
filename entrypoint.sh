@@ -4,6 +4,4 @@
 mkdir -p /steamcmd
 cp -a /opt/steamcmd/* /steamcmd/
 
-mkdir /arma3/logs
-
 exec "$@"
