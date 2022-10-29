@@ -135,10 +135,6 @@ if __name__ == '__main__':
     m = Gauge('arma3_server_memory', 'Memory in Megabytes')
     p = Gauge('arma3_server_players', 'Currently connected players')
 
-    # output to stdout and log file
-    # TODO: this should be simpler
-    # once prometheus metrics are working, we no longer need a separate file and can remove the logs folder from entrypoint
-
     import subprocess
 
     with subprocess.Popen((launch.split(' ')), stdout=subprocess.PIPE, bufsize=1, universal_newlines=True, stderr=subprocess.STDOUT) as process:
