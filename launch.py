@@ -15,7 +15,7 @@ def env_defined(key):
     return key in os.environ and len(os.environ[key]) > 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     CONFIG_FILE = os.environ["ARMA_CONFIG"]
     KEYS = "/arma3/keys"
@@ -32,10 +32,14 @@ if __name__ == '__main__':
         steamcmd.extend(["+force_install_dir", "/arma3"])
 
         if env_defined("STEAM_USER") and env_defined("STEAM_PASSWORD"):
-            steamcmd.extend(["+login", os.environ["STEAM_USER"], os.environ["STEAM_PASSWORD"]])
+            steamcmd.extend(
+                ["+login", os.environ["STEAM_USER"], os.environ["STEAM_PASSWORD"]]
+            )
             steamcmd.extend(["+app_update", "233780"])
         else:
-            print("WARNING: Skipping installation as STEAM_USER or STEAM_PASSWORD are missing")
+            print(
+                "WARNING: Skipping installation as STEAM_USER or STEAM_PASSWORD are missing"
+            )
 
         if env_defined("STEAM_BRANCH"):
             steamcmd.extend(["-beta", os.environ["STEAM_BRANCH"]])
@@ -46,7 +50,11 @@ if __name__ == '__main__':
         steamcmd.extend(["validate", "+quit"])
         subprocess.call(steamcmd)
     else:
-        print("Skipping installation of ARMA because SKIP_INSTALL is {}".format(os.environ["SKIP_INSTALL"]))
+        print(
+            "Skipping installation of ARMA because SKIP_INSTALL is {}".format(
+                os.environ["SKIP_INSTALL"]
+            )
+        )
 
     # Mods
 
@@ -131,17 +139,27 @@ if __name__ == '__main__':
 
     start_http_server(8000)
 
-    f = Gauge('arma3_server_fps', 'Frames per second')
-    m = Gauge('arma3_server_memory', 'Memory in Megabytes')
-    p = Gauge('arma3_server_players', 'Currently connected players')
+    f = Gauge("arma3_server_fps", "Frames per second")
+    m = Gauge("arma3_server_memory", "Memory in Megabytes")
+    p = Gauge("arma3_server_players", "Currently connected players")
 
     import subprocess
 
-    with subprocess.Popen((launch.split(' ')), stdout=subprocess.PIPE, bufsize=1, universal_newlines=True, stderr=subprocess.STDOUT) as process:
+    with subprocess.Popen(
+        (launch.split(" ")),
+        stdout=subprocess.PIPE,
+        bufsize=1,
+        universal_newlines=True,
+        stderr=subprocess.STDOUT,
+        encoding="iso-8859-1",
+    ) as process:
         for line in process.stdout:
-            print(line, end='')
-            if "Server load: FPS" in line:
-                metrics = local.parse_monitor_log(line)
-                f.set(metrics["fps"])
-                m.set(metrics["memory"])
-                p.set(metrics["players"])
+            try:
+                print(line, end="")
+                if "Server load: FPS" in line:
+                    metrics = local.parse_monitor_log(line)
+                    f.set(metrics["fps"])
+                    m.set(metrics["memory"])
+                    p.set(metrics["players"])
+            except UnicodeDecodeError as e:
+                print(e)
