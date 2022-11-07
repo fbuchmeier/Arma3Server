@@ -129,7 +129,6 @@ if __name__ == "__main__":
         launch += mod_param("serverMod", local.mods("servermods"))
 
     print("LAUNCHING ARMA SERVER WITH", launch, flush=True)
-
     open("/tmp/arma3_install_success", "a").close()
 
     # setup prometheus metrics
@@ -139,9 +138,12 @@ if __name__ == "__main__":
 
     start_http_server(8000)
 
-    f = Gauge("arma3_server_fps", "Frames per second")
-    m = Gauge("arma3_server_memory", "Memory in Megabytes")
-    p = Gauge("arma3_server_players", "Currently connected players")
+    metrics = {}
+    for m in local.antistasi_fields:
+        metrics["antistasi_" + local.sanitize(m)] = Gauge("arma3_antistasi_" + local.sanitize(m), m)
+
+    for m in local.server_fields:
+        metrics["server_" + local.sanitize(m)] = Gauge("arma3_server_" + local.sanitize(m), m)
 
     import subprocess
 
@@ -156,10 +158,19 @@ if __name__ == "__main__":
         for line in process.stdout:
             try:
                 print(line, end="")
+
+                if "Dedicated Host created" in line:
+                    open("/tmp/arma3_launch_success", "a").close()
+
                 if "Server load: FPS" in line:
-                    metrics = local.parse_monitor_log(line)
-                    f.set(metrics["fps"])
-                    m.set(metrics["memory"])
-                    p.set(metrics["players"])
+                    result = local.parse_monitor_log(line)
+                    for m in local.server_fields:
+                        metrics["server_" + local.sanitize(m)].set(result[local.sanitize(m)])
+
+                if "Antistasi" in line and "A3A_fnc_logPerformance" in line:
+                    result = local.parse_antistasi_log(line, local.antistasi_fields)
+                    for m in local.antistasi_fields:
+                        metrics["antistasi_" + local.sanitize(m)].set(result[local.sanitize(m)])
+
             except UnicodeDecodeError as e:
                 print(e)
