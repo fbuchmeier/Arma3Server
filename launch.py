@@ -140,10 +140,14 @@ if __name__ == "__main__":
 
     metrics = {}
     for m in local.antistasi_fields:
-        metrics["antistasi_" + local.sanitize(m)] = Gauge("arma3_antistasi_" + local.sanitize(m), m)
+        metrics["antistasi_" + local.sanitize(m)] = Gauge(
+            "arma3_antistasi_" + local.sanitize(m), m
+        )
 
     for m in local.server_fields:
-        metrics["server_" + local.sanitize(m)] = Gauge("arma3_server_" + local.sanitize(m), m)
+        metrics["server_" + local.sanitize(m)] = Gauge(
+            "arma3_server_" + local.sanitize(m), m
+        )
 
     import subprocess
 
@@ -159,18 +163,25 @@ if __name__ == "__main__":
             try:
                 print(line, end="")
 
-                if "Dedicated Host created" in line:
+                if "Dedicated host created".lower() in line:
                     open("/tmp/arma3_launch_success", "a").close()
 
-                if "Server load: FPS" in line:
+                if "Server load: FPS".lower() in line:
                     result = local.parse_monitor_log(line)
                     for m in local.server_fields:
-                        metrics["server_" + local.sanitize(m)].set(result[local.sanitize(m)])
+                        metrics["server_" + local.sanitize(m)].set(
+                            result[local.sanitize(m)]
+                        )
 
-                if "Antistasi" in line and "A3A_fnc_logPerformance" in line:
+                if (
+                    "Antistasi".lower() in line
+                    and "A3A_fnc_logPerformance".lower() in line
+                ):
                     result = local.parse_antistasi_log(line, local.antistasi_fields)
                     for m in local.antistasi_fields:
-                        metrics["antistasi_" + local.sanitize(m)].set(result[local.sanitize(m)])
+                        metrics["antistasi_" + local.sanitize(m)].set(
+                            result[local.sanitize(m)]
+                        )
 
             except UnicodeDecodeError as e:
                 print(e)

@@ -97,12 +97,12 @@ To use a Creator DLC the `STEAM_BRANCH` must be set to `creatordlc`
 ### Local
 
 1. Place the mods inside `/mods` or `/servermods`.
-2. Be sure that the mod folder is all lowercase and does not show up with quotation marks around it when listing the directory eg `'@ACE(v2)'`
-3. Run the following command from the mods and/or servermods directory to confirm that all the files are lowercase.
+1. Be sure that the mod folder is all lowercase and does not show up with quotation marks around it when listing the directory eg `'@ACE(v2)'`
+1. Run the following command from the mods and/or servermods directory to confirm that all the files are lowercase.
     `find . -depth -exec rename 's/(.*)\/([^\/]*)/$1\/\L$2/' {} \;`
     If this is NOT the case, the mods will prevent the server from booting.
-4. Make sure that each mod contains a lowercase `/addons` folder. This folder also needs to be lowercase in order for the server to load the required PBO files inside.
-5. Start the server.
+1. Make sure that each mod contains a lowercase `/addons` folder. This folder also needs to be lowercase in order for the server to load the required PBO files inside.
+1. Start the server.
 
 ### Workshop
 

@@ -2,11 +2,7 @@ import os
 import keys
 import re
 
-server_fields = [
-    "fps",
-    "memory",
-    "players"
-]
+server_fields = ["fps", "memory", "players"]
 
 antistasi_fields = [
     "ServerFPS",
@@ -42,6 +38,7 @@ def mods(d):
             keys.copy(moddir)
 
     return mods
+
 
 # TODO use `server_fields`
 def parse_monitor_log(line):
@@ -114,8 +111,8 @@ def parse_antistasi_log(line, fields=[]):
 
 
 def camel_to_snake(name):
-    name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
-    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
+    name = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
+    return re.sub("([a-z0-9])([A-Z])", r"\1_\2", name).lower()
 
 
 def sanitize(s):
