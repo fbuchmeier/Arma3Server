@@ -23,7 +23,7 @@ SKIP_INSTALL = bool(
     os.environ.get("SKIP_INSTALL", "False").lower() in ("true", "1", "t")
 )
 MODS_PRESET = os.environ.get("MODS_PRESET")
-MODS_LOCAL = bool(os.environ("MODS_LOCAL", "False").lower() in ("true", "1", "t"))
+MODS_LOCAL = bool(os.environ.get("MODS_LOCAL", "False").lower() in ("true", "1", "t"))
 ARMA_PROFILE = os.environ.get("ARMA_PROFILE")
 ARMA_BINARY = os.environ.get("ARMA_BINARY")
 ARMA_LIMITFPS = os.environ.get("ARMA_LIMITFPS")
@@ -35,7 +35,7 @@ PORT = os.environ.get("PORT")
 
 if __name__ == "__main__":
 
-    metrics = local.setup_prometheus()
+    metrics = local.setup_metrics()
 
     if not SKIP_INSTALL:
         local.setup_arma(
