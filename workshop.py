@@ -9,17 +9,13 @@ WORKSHOP = "steamapps/workshop/content/107410/"
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36"  # noqa: E501
 
 
-def env_defined(key):
-    return key in os.environ and len(os.environ[key]) > 0
-
-
-def mod(id):
-    if os.environ["SKIP_INSTALL"] in ["", "false"]:
+def mod(id, steam_user="", steam_password="", skip_install=False):
+    if not skip_install:
         steamcmd = ["/steamcmd/steamcmd.sh"]
         steamcmd.extend(["+force_install_dir", "/arma3"])
-        if env_defined("STEAM_USER") and env_defined("STEAM_PASSWORD"):
+        if steam_password and steam_user:
             steamcmd.extend(
-                ["+login", os.environ["STEAM_USER"], os.environ["STEAM_PASSWORD"]]
+                ["+login", steam_user, steam_password]
             )
         steamcmd.extend(["+workshop_download_item", "107410", id])
         steamcmd.extend(["+quit"])
@@ -41,12 +37,12 @@ def mod(id):
     else:
         print(
             "Skipping installation of mods because SKIP_INSTALL is {}".format(
-                os.environ["SKIP_INSTALL"]
+                str(skip_install)
             )
         )
 
 
-def preset(mod_file):
+def preset(mod_file, steam_user="", steam_password="", skip_install=False):
     if mod_file.startswith("http"):
         req = urllib.request.Request(
             mod_file,
@@ -62,7 +58,7 @@ def preset(mod_file):
         regex = r"filedetails\/\?id=(\d+)\""
         matches = re.finditer(regex, html, re.MULTILINE)
         for _, match in enumerate(matches, start=1):
-            mod(match.group(1))
+            mod(match.group(1), steam_user=steam_user, steam_passwor=steam_password, skip_install=skip_install)
             moddir = WORKSHOP + match.group(1)
             mods.append(moddir)
             keys.copy(moddir)

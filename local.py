@@ -1,6 +1,9 @@
 import os
 import keys
 import re
+import subprocess
+from string import Template
+from prometheus_client import start_http_server, Gauge
 
 server_fields = ["fps", "memory", "players"]
 
@@ -40,7 +43,6 @@ def mods(d):
     return mods
 
 
-# TODO use `server_fields`
 def parse_monitor_log(line):
     """
     >>> parse_monitor_log("19:54:09 Server load: FPS 29, memory used: 1535 MB, out: 19 Kbps, in: 0 Kbps, NG:0, G:65, BE-NG:0, BE-G:0, Players: 1 (L:0, R:1, B:0, G:0, D:0)")
@@ -119,7 +121,51 @@ def sanitize(s):
     return camel_to_snake(re.sub(r"\W+", "", s))
 
 
+def setup_metrics():
+    """
+    Sets up /metrics endpoint at localhost:8000
+    and exposes all metrics defined in server_fields and anstistasi_fields
+    """
+    start_http_server(8000)
+
+    metrics = {}
+    for m in antistasi_fields:
+        metrics["antistasi_" + sanitize(m)] = Gauge(
+            "arma3_antistasi_" + sanitize(m), m
+        )
+
+    for m in server_fields:
+        metrics["server_" + sanitize(m)] = Gauge(
+            "arma3_server_" + sanitize(m), m
+        )
+
+    return metrics
+
+def setup_arma(steam_user, steam_password, steam_branch="", steam_branch_password="", home="/arma3"):
+    """
+    Setup ARMA with the given user, password and branch
+    """
+    print("Installing ARMA 3")
+    steamcmd = ["/steamcmd/steamcmd.sh"]
+    steamcmd.extend(["+force_install_dir", home])
+    steamcmd.extend(["+login", steam_user, steam_password])
+    steamcmd.extend(["+app_update", "233780"])
+
+    if steam_branch:
+        steamcmd.extend(["-beta", steam_branch])
+
+    if steam_branch_password:
+        steamcmd.extend(["-betapassword", steam_branch_password])
+
+    steamcmd.extend(["validate", "+quit"])
+
+    return subprocess.call(steamcmd)
+
+
+def mod_param(name, mods):
+    return ' -{}="{}" '.format(name, ";".join(mods))
+
+
 if __name__ == "__main__":
     import doctest
-
     doctest.testmod()
