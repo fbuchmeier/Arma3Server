@@ -93,6 +93,9 @@ if __name__ == "__main__":
                 if "Dedicated host created".lower() in line:
                     open(LAUNCH_SUCCESS, "a").close()
 
+                if "Dedicated client created".lower() in line:
+                    open(HEADLESS_CLIENTS_SUCCESS, "a").close()
+
                 if "Server load: FPS".lower() in line:
                     result = local.parse_monitor_log(line)
                     for m in local.server_fields:
